@@ -16,7 +16,9 @@ public:
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void DrawTriangle();
-	void DrawParticle();
+
+	void CreateParticle(const int num);
+	void DrawParticles();
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
