@@ -6,22 +6,49 @@ in float a_Mass;
 in vec2 a_Vel;
 in float a_RV;
 in float a_RV1;
+in float a_RV2;
+
+// Vertex Shader의 Output은 Fragment Shader 입력의 근간
+out float v_Grey;
 
 const float c_PI = 3.141592;
 const float c_G = -9.8;
 
+float random(float x)
+{
+    return fract(sin(x) * 43758.5453123);
+}
+
 // 중간 -> 끝까지 Sin 그리며 한 주기
 void sin1()
 {
-    float t = u_Time * 2;
-    vec4 newPosition;
-    
-    newPosition.x = a_Position.x + t; 
-    newPosition.y = a_Position.y + 0.5 * sin(t * 2 * 3.141592);
-    newPosition.z = 0.0;
-    newPosition.w = 1.0;
+    float startTime  = a_RV1 * 2;
+    float newTime = u_Time - startTime;
 
-    gl_Position = newPosition;
+    if (newTime > 0)
+    {
+        float t = mod(newTime * 2, 1.0);
+        float amp = t * 0.5 * (a_RV - 0.5) * 2;    
+        // 아래로도 내려가도록 a_RV - 0.5
+        // 끝으로 갈수록 퍼짐 (1-t), 끝으로 갈수록 줄어듦 (t)
+        float fre = a_RV1;
+        
+        vec4 newPosition;
+    
+        newPosition.x = a_Position.x * a_RV2 * 0.2  + t; 
+        newPosition.y = a_Position.y * a_RV2 * 0.2 
+                            + amp * sin(t * 2 * c_PI * fre);
+        newPosition.z = 0.0;
+        newPosition.w = 1.0;
+
+        gl_Position = newPosition;
+        v_Grey = 1-t;
+    }
+   else
+   {
+        gl_Position = vec4(-1000, 0, 0, 0);
+        v_Grey = 0;
+   }
 }
 
 // 처음 -> 끝까지 Sin 그리며 한 주기
@@ -56,26 +83,37 @@ void circle()
     gl_Position = newPosition;
 }
 
+// [오류] 처음에 뒤죽박죽이었다가 나중에 괜찮아짐..?
+// [원인?] Stride, 데이터가 잘못 올라갔거나 -> 데이터 잘 맞게 썼는데 머지????
 void Falling()
 {
-    float t = mod(u_Time, 1.0); // 0 ~ 1 구간 반복
-    float tt = t*t;
-    float vx, vy;
-    vx = a_Vel.x;
-    vy = a_Vel.y;
+    float startTime  = a_RV1 * 3;
+    float newTime = u_Time - startTime;
 
-    vec4 newPos;
-    newPos.x = a_Position.x + vx * t;
-    newPos.y = a_Position.y + vy * t + 0.5 * c_G * tt;
-    newPos.z = 0;
-    newPos.w = 1;
+    if (newTime > 0)
+    {
+        float lifescale = 2.0;
+        float lifeTime = 0.5 + a_RV2 * lifescale;
+        // float t = lifeTime * fract(newTime/lifeTime);   // 0 ~ 1 구간 반복
+        float t = mod(newTime, lifeTime);
 
-    gl_Position = newPos;
-}
+        float tt = t*t;
+        float vx, vy;
+        float sx, sy;
 
-float random(float x)
-{
-    return fract(sin(x) * 43758.5453123);
+        vx = a_Vel.x;
+        vy = a_Vel.y;
+        sx = a_Position.x * (1-random(a_RV)) + sin(a_RV*2*c_PI);
+        sy = a_Position.y * (1-random(a_RV)) + cos(a_RV*2*c_PI);
+
+        vec4 newPos;
+        newPos.x = sx + vx * t;
+        newPos.y = sy + vy * t + 0.5 * c_G * tt;
+        newPos.z = 0;
+        newPos.w = 1;
+
+        gl_Position = newPos;
+    }
 }
 
 void CircleParticleFalling()
@@ -111,44 +149,6 @@ void CircleParticleFalling()
     else 
     {
         gl_Position = vec4(-1000, 0, 0, 0);
-    }
-}
-
-void MagicSpiral()
-{
-    // 1. 파티클 개별 시작 시간 (0 ~ 2.0초 사이 랜덤 대기)
-    float startTime = a_RV1 * 2.0; 
-    float newTime = u_Time - startTime;
-
-    if (newTime > 0)
-    {
-        // 0 ~ 1.0 사이로 반복되는 로컬 타임
-        float t = mod(newTime, 1.5) / 1.5; 
-        
-        // --- [사이즈 다르게 하기] ---
-        // a_RV를 이용해 0.5배 ~ 1.5배 사이의 랜덤 크기 결정
-        float sizeScale = 0.5 + random(a_RV) * 1.0;
-        vec3 scaledPos = a_Position * sizeScale;
-
-        // --- [소용돌이 치며 퍼지는 움직임] ---
-        float angle = a_RV * 2.0 * c_PI + (t * 5.0); // 시간에 따라 회전 가속
-        float radius = t * 0.8; // 시간이 흐를수록 중심으로 부터 멀어짐
-        
-        float sx = radius * cos(angle);
-        float sy = radius * sin(angle);
-
-        // --- [최종 위치 계산] ---
-        vec4 newPos;
-        newPos.x = scaledPos.x + sx;
-        newPos.y = scaledPos.y + sy + (0.5 * c_G * t * t); // 중력 적용
-        newPos.z = 0.0;
-        newPos.w = 1.0;
-
-        gl_Position = newPos;
-    }
-    else 
-    {
-        gl_Position = vec4(-1000.0, 0.0, 0.0, 0.0);
     }
 }
 
@@ -198,5 +198,7 @@ void SupernovaBurst()
 void main()
 {
     //CircleParticleFalling();
-    SupernovaBurst();
+    //SupernovaBurst();
+    Falling();
+    //sin1();
 }

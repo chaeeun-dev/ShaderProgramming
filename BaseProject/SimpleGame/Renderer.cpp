@@ -271,16 +271,19 @@ void Renderer::CreateParticle(const int num)
 			/ static_cast<float>(RAND_MAX);		// 0 ~ 1 사이 랜덤값
 		float RV1 = static_cast<float>(std::rand())
 			/ static_cast<float>(RAND_MAX);		// 0 ~ 1 사이 랜덤값
+		float RV2 = static_cast<float>(std::rand())
+			/ static_cast<float>(RAND_MAX);		// 0 ~ 1 사이 랜덤값
+
 
 		float vertices[] =
 		{
-			startX - size / 2, startY - size / 2, 0, mass, vx, vy, RV, RV1,
-			startX + size / 2, startY - size / 2, 0, mass, vx, vy, RV, RV1,
-			startX + size / 2, startY + size / 2, 0, mass, vx, vy, RV, RV1,
-
-			startX - size / 2, startY - size / 2, 0, mass, vx, vy, RV, RV1,
-			startX + size / 2, startY + size / 2, 0, mass, vx, vy, RV, RV1,
-			startX - size / 2, startY + size / 2, 0, mass, vx, vy, RV, RV1,
+			startX - size / 2, startY - size / 2, 0, mass, vx, vy, RV, RV1, RV2,
+			startX + size / 2, startY - size / 2, 0, mass, vx, vy, RV, RV1, RV2,
+			startX + size / 2, startY + size / 2, 0, mass, vx, vy, RV, RV1, RV2,
+																		       
+			startX - size / 2, startY - size / 2, 0, mass, vx, vy, RV, RV1, RV2,
+			startX + size / 2, startY + size / 2, 0, mass, vx, vy, RV, RV1, RV2,
+			startX - size / 2, startY + size / 2, 0, mass, vx, vy, RV, RV1, RV2,
 		};
 
 		for (float v : vertices)
@@ -307,20 +310,23 @@ void Renderer::DrawParticles()
 	int attribVel = glGetAttribLocation(m_TriangleShader, "a_Vel");
 	int attribRV = glGetAttribLocation(m_TriangleShader, "a_RV");
 	int attribRV1 = glGetAttribLocation(m_TriangleShader, "a_RV1");
+	int attribRV2 = glGetAttribLocation(m_TriangleShader, "a_RV2");
 
 	glEnableVertexAttribArray(attribPosition);
 	glEnableVertexAttribArray(attribMass);
 	glEnableVertexAttribArray(attribVel);
 	glEnableVertexAttribArray(attribRV);
 	glEnableVertexAttribArray(attribRV1);
+	glEnableVertexAttribArray(attribRV2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOParticle);
 
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, 0);
-	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (GLvoid*)(sizeof(float) * 3));
-	glVertexAttribPointer(attribVel, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (GLvoid*)(sizeof(float) * 4));
-	glVertexAttribPointer(attribRV, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (GLvoid*)(sizeof(float) * 6));
-	glVertexAttribPointer(attribRV1, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (GLvoid*)(sizeof(float) * 7));
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, 0);
+	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (GLvoid*)(sizeof(float) * 3));
+	glVertexAttribPointer(attribVel, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (GLvoid*)(sizeof(float) * 4));
+	glVertexAttribPointer(attribRV, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (GLvoid*)(sizeof(float) * 6));
+	glVertexAttribPointer(attribRV1, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (GLvoid*)(sizeof(float) * 7));
+	glVertexAttribPointer(attribRV2, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (GLvoid*)(sizeof(float) * 8));
 
 	// m_ParticleCount * 6 (사각형 하나당 삼각형 2개 = 점 6개)
 	glDrawArrays(GL_TRIANGLES, 0, m_ParticleCount * 6);
