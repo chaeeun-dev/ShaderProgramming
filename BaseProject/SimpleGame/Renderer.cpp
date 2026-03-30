@@ -21,10 +21,12 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	m_TriangleShader = CompileShaders("./Shaders/Triangle.vs", "./Shaders/Triangle.fs");
-	
+	m_FSShader = CompileShaders("./Shaders/FS.vs", "./Shaders/FS.fs");
+
 	//Create VBOs
-	CreateVertexBufferObjects();
-	CreateParticle(1000);
+	//CreateVertexBufferObjects();
+	//CreateParticle(1000);
+	CreateVertexBufferObjects2();
 
 	if (m_SolidRectShader > 0 && m_VBORect > 0)
 	{
@@ -80,6 +82,25 @@ void Renderer::CreateVertexBufferObjects()
 	glGenBuffers(1, &m_VBOTriangle);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+}
+
+void Renderer::CreateVertexBufferObjects2()
+{
+	float rectFS[]
+		=
+	{
+		-1.f, -1.f, 0.f, 0, 1,
+		1.f, 1.f, 0.f, 1, 0,
+		-1.f, 1.f, 0.f, 0, 0,	//Triangle1
+
+		-1.f, -1.f, 0.f, 0, 1,
+		1.f, -1.f, 0.f, 1, 1,
+		1.f, 1.f, 0.f, 1, 0,	 //Triangle2
+	};
+
+	glGenBuffers(1, &m_VBOFS);	// VBO(GPU 전용 보관함)의 ID 생성
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);	// Binding, VBO를 사용할 것이라고 선언
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectFS), rectFS, GL_STATIC_DRAW);	// 데이터를 CPU에서 GPU 보관함으로 복사
 }
 
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
@@ -330,6 +351,28 @@ void Renderer::DrawParticles()
 
 	// m_ParticleCount * 6 (사각형 하나당 삼각형 2개 = 점 6개)
 	glDrawArrays(GL_TRIANGLES, 0, m_ParticleCount * 6);
+}
+
+void Renderer::DrawFS()
+{
+	//Program select
+	glUseProgram(m_FSShader);
+
+	int attribPosition = glGetAttribLocation(m_FSShader, "a_Pos");
+	int attribTPos = glGetAttribLocation(m_FSShader, "a_TPos");
+
+	// Enable -> 사용할 수 있도록 
+	glEnableVertexAttribArray(attribPosition);
+	glEnableVertexAttribArray(attribTPos);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
+
+	// GPU에게 데이터의 구조를 알려주기
+	// a_Position: 시작점 0부터 float 3개 읽어라
+	glVertexAttribPointer(attribPosition, 3/*몇 개 읽음*/, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0/*시작점 주소*/);
+	glVertexAttribPointer(attribTPos, 2/*몇 개 읽음*/, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (GLvoid*)(sizeof(float) * 3));
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)

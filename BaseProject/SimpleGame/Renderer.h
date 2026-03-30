@@ -19,6 +19,7 @@ public:
 
 	void CreateParticle(const int num);
 	void DrawParticles();
+	void DrawFS();
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -26,6 +27,7 @@ private:
 	void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
 	GLuint CompileShaders(char* filenameVS, char* filenameFS);
 	void CreateVertexBufferObjects();
+	void CreateVertexBufferObjects2();
 	void GetGLPosition(float x, float y, float *newX, float *newY);
 	void GenParticle(int count);
 
@@ -42,5 +44,9 @@ private:
 
 	GLuint m_VBOParticle = 0;
 	int m_ParticleCount = 0;
+
+	// Fragment Shader
+	GLuint m_VBOFS = 0;
+	GLuint m_FSShader = 0;
 };
 
