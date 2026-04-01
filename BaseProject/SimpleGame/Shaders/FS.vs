@@ -5,6 +5,8 @@ in vec2 a_TPos;
 
 out vec2 V_TPos;
 
+uniform float u_Time;
+
 void main()
 {
 	vec4 newPosition;

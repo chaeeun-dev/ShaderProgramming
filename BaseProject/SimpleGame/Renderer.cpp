@@ -355,8 +355,13 @@ void Renderer::DrawParticles()
 
 void Renderer::DrawFS()
 {
+	g_time += 0.0003;
+
 	//Program select
 	glUseProgram(m_FSShader);
+
+	int uTime = glGetUniformLocation(m_TriangleShader, "u_Time");
+	glUniform1f(uTime, g_time);
 
 	int attribPosition = glGetAttribLocation(m_FSShader, "a_Pos");
 	int attribTPos = glGetAttribLocation(m_FSShader, "a_TPos");
