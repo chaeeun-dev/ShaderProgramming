@@ -8,6 +8,8 @@ const float c_PI = 3.141592;
 
 uniform float u_Time;
 
+uniform vec4 u_DropInfo[1000];	// vec4(x, y, startTime, LifeTime)
+
 void Simple()
 {
 	if (V_TPos.x + V_TPos.y < 0.5 )
@@ -63,47 +65,42 @@ void CircleSin()
 	FragColor = vec4(pow(value, 16));
 }
 
-void FractalCircle()
+void RainDrop()
 {
-    vec2 uv = V_TPos.xy;
-    vec2 center = vec2(0.5, 0.5);
+	float accum = 0;
+	// RainDrop
+	for (int i = 0; i < 1000; ++i)
+	{
+		float lTime = u_DropInfo[i].w;
+		float sTime = u_DropInfo[i].z;
+		float newTime = u_Time - sTime;
 
-    // Áß½É ±âÁØ ÁÂÇ¥
-    vec2 p = uv - center;
+		if (newTime > 0)
+		{
+			newTime = fract(newTime/lTime);	// 0~1
+			float oneMinus = 1 - newTime;	// 1~0
+			float t = newTime * lTime;
 
-    float t = u_Time * 0.5;
-    float accum = 0.0;
-    float scale = 1.0;
+			vec2 center = u_DropInfo[i].xy;
+			vec2 currPos = V_TPos.xy;
 
-    // ÇÁ·¢Å» ¹Ýº¹
-    for(int i = 0; i < 5; i++)
-    {
-        // È¸Àü
-        float angle = t + float(i) * 1.2;
-        mat2 rot = mat2(cos(angle), -sin(angle),
-                        sin(angle),  cos(angle));
-        p = rot * p;
+			float range = t / 10;
+			float d = distance(center, currPos);
+	
+			float fade = 100 * clamp(range - d, 0, 1);
 
-        // °Å¸® ±â¹Ý ÆÄµ¿
-        float d = length(p);
-        float wave = sin(d * 20.0 - u_Time * 2.0);
+			float value = pow(abs(sin(d * 2 * c_PI * 10 - t * 15)), 16);
+			accum += value * fade * oneMinus;
+		}
+		else
+		{
+		}
+	}
 
-        // ´©Àû (ÇÁ·¢Å» ´À³¦)
-        accum += abs(wave) / scale;
-
-        // ÁÂÇ¥ ¿Ö°î (ÇÙ½É!)
-        p = abs(p) / dot(p, p) - 0.5;
-
-        scale *= 1.5;
-    }
-
-    // »ö»ó
-    vec3 col = vec3(accum);
-    col = pow(col, vec3(1.2));
-
-    FragColor = vec4(col, 1.0);
+	FragColor = vec4(accum);
 }
 
 void main()
 {
+	RainDropFancy();
 }
