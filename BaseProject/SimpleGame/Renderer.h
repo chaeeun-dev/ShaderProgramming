@@ -23,6 +23,7 @@ public:
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
+	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
 	bool ReadFile(char* filename, std::string *target);
 	void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
 	GLuint CompileShaders(char* filenameVS, char* filenameFS);
@@ -51,5 +52,10 @@ private:
 
 	// RainDrops
 	float m_DropPoints[1000 * 4];
+
+	// Texture
+	GLuint m_RGBTexture = 0;
+	GLuint m_NumTexture[10];
+	GLuint m_NumsTexture = 0;
 };
 

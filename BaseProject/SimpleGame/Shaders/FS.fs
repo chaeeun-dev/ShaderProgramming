@@ -7,6 +7,7 @@ in vec2 V_TPos;
 const float c_PI = 3.141592;
 
 uniform float u_Time;
+uniform sampler2D u_RGBTex;
 
 uniform vec4 u_DropInfo[1000];	// vec4(x, y, startTime, LifeTime)
 
@@ -236,7 +237,28 @@ float amp = 0.4;
     FragColor = vec4(color, 1.0);
 }
 
+void TextureSampling()
+{
+	vec4 c0;
+	vec4 c1;
+	vec4 c2;
+	vec4 c3;
+	vec4 c4;
+
+	float offsetX = 0.01;
+	c0 = texture(u_RGBTex, vec2(V_TPos.x - offsetX * 2, V_TPos.y));
+	c1 = texture(u_RGBTex, vec2(V_TPos.x - offsetX * 1, V_TPos.y));
+	c2 = texture(u_RGBTex, vec2(V_TPos.x - offsetX * 0, V_TPos.y));
+	c3 = texture(u_RGBTex, vec2(V_TPos.x + offsetX * 1, V_TPos.y));
+	c4 = texture(u_RGBTex, vec2(V_TPos.x + offsetX * 2, V_TPos.y));
+
+	vec4 sum = c0 + c1 + c2 + c3 + c4;
+	sum = sum / 5;
+
+	FragColor = sum;
+}
+
 void main()
 {
-	Flag2();
+	TextureSampling();
 }
