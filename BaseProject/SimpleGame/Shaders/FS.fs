@@ -1,4 +1,4 @@
-﻿#version 330
+#version 330
 
 layout(location=0) out vec4 FragColor;
 
@@ -258,7 +258,30 @@ void TextureSampling()
 	FragColor = sum;
 }
 
+void TextureQ1()
+{
+	float tx = fract(V_TPos.x * 3);
+	float ty = V_TPos.y / 3;
+
+	float offsetX = 0;
+	float offsetY = (2 - floor(V_TPos.x * 3)) / 3;
+
+	vec2 newTex = vec2(tx + offsetX, ty + offsetY);
+	FragColor = texture(u_RGBTex, newTex);	
+}
+
+void TextureQ2()
+{
+	float tx = fract(V_TPos.x * 3);
+	float ty = V_TPos.y / 3;
+
+	float offsetX = 0;
+	float offsetY = floor(V_TPos.x * 3) / 3;
+	vec2 newTex = vec2(tx + offsetX, ty + offsetY);
+	FragColor = texture(u_RGBTex, newTex);	
+}
+
 void main()
 {
-	TextureSampling();
+	TextureQ2();
 }
