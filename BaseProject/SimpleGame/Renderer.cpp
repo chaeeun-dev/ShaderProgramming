@@ -3,6 +3,7 @@
 #include <vector>
 #include "LoadPng.h"
 #include <assert.h>
+#include "Windows.h"
 
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
@@ -26,12 +27,13 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_FSShader = CompileShaders("./Shaders/FS.vs", "./Shaders/FS.fs");
 
 	// Load Texutre
-	m_RGBTexture = CreatePngTexture("./Textures/rgb.png", GL_NEAREST);
-	m_NumsTexture = CreatePngTexture("./Textures/numbers.png", GL_NEAREST);
+	m_RGBTexture = CreatePngTexture("./Textures/rgb.png", GL_NEAREST);	// 0 slot
+	m_NumsTexture = CreatePngTexture("./Textures/numbers.png", GL_NEAREST);	// 1 slot
+	
 	for (int i = 0; i < 10; ++i)
 	{
 		std::string path = "./Textures/" + std::to_string(i) + ".png";
-		m_NumsTexture = CreatePngTexture((char*)path.c_str(), GL_NEAREST);
+		m_NumTexture[i] = CreatePngTexture((char*)path.c_str(), GL_NEAREST);	// 2 ~ 11 slot
 	}
 
 	//Create VBOs
@@ -402,26 +404,69 @@ void Renderer::DrawParticles()
 	glDrawArrays(GL_TRIANGLES, 0, m_ParticleCount * 6);
 }
 
+int g_CurNum = 0;
+
 void Renderer::DrawFS()
 {
 	g_time += 0.001;
 
 	//Program select
-	glUseProgram(m_FSShader);
+	GLuint shader = m_FSShader;
+	glUseProgram(shader);
 
-	int uTime = glGetUniformLocation(m_FSShader, "u_Time");
-	glUniform1f(uTime, g_time);
-
-	int uRGBTexture = glGetUniformLocation(m_FSShader, "u_RGBTex");
-	glUniform1i(uRGBTexture, 0);
-	glActiveTexture(GL_TEXTURE0);	// 0번지 슬롯 사용
-	glBindTexture(GL_TEXTURE_2D, m_RGBTexture);
-
-	int uPoints = glGetUniformLocation(m_FSShader, "u_DropInfo");
+	int uPoints = glGetUniformLocation(shader, "u_DropInfo");
 	glUniform4fv(uPoints, 1000, m_DropPoints);
 
-	int attribPosition = glGetAttribLocation(m_FSShader, "a_Pos");
-	int attribTPos = glGetAttribLocation(m_FSShader, "a_TPos");
+	int attribPosition = glGetAttribLocation(shader, "a_Pos");
+	int attribTPos = glGetAttribLocation(shader, "a_TPos");
+	
+	int uTime = glGetUniformLocation(shader, "u_Time");
+	glUniform1f(uTime, g_time);
+
+	int uRGBTexture = glGetUniformLocation(shader, "u_RGBTex");
+	glUniform1i(uRGBTexture, 0);
+
+	int uCurNumTexture = glGetUniformLocation(shader, "u_CurNumTex");
+	glUniform1i(uCurNumTexture, g_CurNum + 2);
+	g_CurNum++;
+	if (g_CurNum > 9)
+		g_CurNum = 0;
+	Sleep(1000);
+
+	int uInputNum = glGetUniformLocation(shader, "u_InputNum");
+	glUniform1i(uInputNum, 6);
+
+	int uNumsTex = glGetUniformLocation(shader, "u_NumsTex");
+	glUniform1i(uNumsTex, 1);
+
+	glActiveTexture(GL_TEXTURE0);	// 0번지 슬롯 사용
+	glBindTexture(GL_TEXTURE_2D, m_RGBTexture);
+	glActiveTexture(GL_TEXTURE1);	// 1번지 슬롯 사용
+	glBindTexture(GL_TEXTURE_2D, m_NumsTexture);
+	
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[0]);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[1]);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[2]);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[3]);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[4]);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[5]);
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[6]);
+	glActiveTexture(GL_TEXTURE9);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[7]);
+	glActiveTexture(GL_TEXTURE10);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[8]);
+	glActiveTexture(GL_TEXTURE11);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[9]);
+	
+
+
 
 	// Enable -> 사용할 수 있도록 
 	glEnableVertexAttribArray(attribPosition);

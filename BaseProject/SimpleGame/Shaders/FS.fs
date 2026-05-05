@@ -8,6 +8,9 @@ const float c_PI = 3.141592;
 
 uniform float u_Time;
 uniform sampler2D u_RGBTex;
+uniform sampler2D u_CurNumTex;
+uniform sampler2D u_NumsTex;
+uniform int u_InputNum;
 
 uniform vec4 u_DropInfo[1000];	// vec4(x, y, startTime, LifeTime)
 
@@ -281,7 +284,52 @@ void TextureQ2()
 	FragColor = texture(u_RGBTex, newTex);	
 }
 
+void TextureQ4()
+{
+	// 화면에 채우지는 텍스처의 개수
+	float resolX = 5;	
+	float resolY = 3;
+	// 얼만큼 빗겨 나가는지
+	float shear = 0.5 - u_Time;	
+
+	float offsetX = fract(ceil(V_TPos.y * resolY) * shear);	// offset
+	float offsetY = 0;
+
+	float tx = fract(V_TPos.x * resolX + offsetX);	// 범위
+	float ty = fract(V_TPos.y * resolY + offsetY);
+
+
+	vec2 newTex = vec2(tx, ty);
+	FragColor = texture(u_RGBTex, newTex);	
+}
+
+void Num()
+{
+	float tx = V_TPos.x;
+	float ty = V_TPos.y;
+
+	float offsetX = 0;
+	float offsetY = 0;
+
+	vec2 newTex = vec2(tx, ty + offsetY);
+	FragColor = texture(u_CurNumTex, newTex);	
+}
+
+void Nums()
+{
+	float index = float(u_InputNum);
+
+	float tx = V_TPos.x / 5;
+	float ty = V_TPos.y/ 2;
+
+	float offsetX = fract(index/ 5.0);
+	float offsetY = floor(index / 5.0) / 2.0;
+
+	vec2 newTex = vec2(tx + offsetX, ty + offsetY);
+	FragColor = texture(u_NumsTex, newTex);	
+}
+
 void main()
 {
-	TextureQ2();
+	Nums();
 }
