@@ -41,6 +41,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_NumsTexture = CreatePngTexture("./textures/numbers.png", GL_NEAREST); //1slot
 	m_ParticleTexture = CreatePngTexture("./textures/particle.png", GL_NEAREST); 
 	m_ParticleSpriteTexture = CreatePngTexture("./textures/explosion.png", GL_NEAREST);
+	m_TacopiTexture = CreatePngTexture("./textures/tacopi.png", GL_NEAREST);
 
 	for (int i = 0; i < 10; i++)
 	{
@@ -751,6 +752,11 @@ void Renderer::DrawDummy()
 	int uTime = glGetUniformLocation(shader, "u_Time");
 	glUniform1f(uTime, g_time);
 	g_time += 0.016;
+
+	int u_TacopiTex = glGetUniformLocation(shader, "u_TacopiTex");
+	glUniform1i(u_TacopiTex, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_TacopiTexture);
 
 	int attribPosition = glGetAttribLocation(shader, "a_Pos");
 	glEnableVertexAttribArray(attribPosition);

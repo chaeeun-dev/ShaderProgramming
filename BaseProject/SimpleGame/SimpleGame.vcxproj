@@ -153,9 +153,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="LoadPng.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="stdafx.h" />
@@ -173,6 +170,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\Dummy.fs" />
+    <None Include="Shaders\Dummy.vs" />
     <None Include="Shaders\FS.fs" />
     <None Include="Shaders\FS.vs" />
     <None Include="Shaders\SolidRect.fs" />

@@ -5,14 +5,21 @@ uniform float u_Time;
 in vec3 a_Pos;	// -0.5~0.5
 
 out float v_Grey;
+out vec2 v_Tex;
 
 float c_PI = 3.141592;
 
-void main()
+void Frag()
 {
+	float tX, tY;
+	tX = a_Pos.x + 0.5;
+	tY = 1.0 - (a_Pos.y + 0.5);
+	v_Tex = vec2(tX, tY);
+
 	float value = a_Pos.x + 0.5;
 	float newX = a_Pos.x;
-	float newY = (a_Pos.y  + value * 0.25 * sin((newX + 0.5) * 2.0 * c_PI - u_Time));
+	float newY = a_Pos.y * (1.0 - value * 0.5) +
+				value * 0.25 * sin((newX + 0.5) * 2.0 * c_PI - u_Time);
 	vec4 final = vec4(newX, newY, 0.0, 1.0);
 
 	vec4 newPosition = final;
@@ -21,4 +28,9 @@ void main()
 	v_Grey = grey;
 
 	gl_Position = newPosition;
+}
+
+void main()
+{
+	Frag();
 }
