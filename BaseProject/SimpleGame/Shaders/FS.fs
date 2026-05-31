@@ -175,71 +175,6 @@ float noise(vec2 p)
            (d - b) * u.x * u.y;
 }
 
-// 프랑스 국기
-void Flag2()
-{
-float amp = 0.4;
-    float speed = 20;
-
-    float sinInput = V_TPos.x * c_PI * 2 - u_Time * speed;
-    float wave = (((sin(sinInput) + 1.0) / 2.0) - 0.5) * amp * V_TPos.x;
-
-    float sinValue = wave + 0.5;
-
-    float finalWidth = 0.1;
-    float width = 0.5 * mix(1.0, finalWidth, V_TPos.x);
-
-    float edgeDist = abs(V_TPos.y - sinValue);
-
-    if (edgeDist > width * 0.5)
-        discard;
-
-    // =========================
-    // 🔥 흔들린 좌표 (핵심)
-    // =========================
-    vec2 uv = V_TPos;
-    uv.y -= wave;
-
-    // =========================
-    // 🇫🇷 프랑스 국기 패턴
-    // =========================
-    vec3 blue  = vec3(0.0, 0.2, 0.6);
-    vec3 white = vec3(0.95, 0.95, 0.95);
-    vec3 red   = vec3(0.8, 0.1, 0.1);
-
-    vec3 color;
-
-    if (uv.x < 0.333)
-        color = blue;
-    else if (uv.x < 0.666)
-        color = white;
-    else
-        color = red;
-
-    // =========================
-    // 🌫️ 살짝 낡은 느낌
-    // =========================
-    float fade = noise(uv * 5.0);
-    color *= mix(0.7, 1.0, fade);
-
-    float dirt = noise(uv * 20.0);
-    color -= dirt * 0.1;
-
-    // =========================
-    // ✨ 가장자리 강조
-    // =========================
-    float highlight = smoothstep(width * 0.5, 0.0, edgeDist);
-    color += highlight * 0.15;
-
-    // =========================
-    // 🌗 물결 음영
-    // =========================
-    float shading = 0.7 + 0.3 * sin(V_TPos.x * 10.0 - u_Time * 5.0);
-    color *= shading;
-
-    FragColor = vec4(color, 1.0);
-}
-
 void TextureSampling()
 {
 	vec4 c0;
@@ -331,5 +266,5 @@ void Nums()
 
 void main()
 {
-	Nums();
+	Flag();
 }

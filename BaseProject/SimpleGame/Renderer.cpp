@@ -53,7 +53,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	CreateVertexBufferObjects();
 
 	// Create Dummy
-	GenDummyMesh(16, 16);
+	GenDummyMesh(100, 100);
 
 	GenParticles(1000);
 
