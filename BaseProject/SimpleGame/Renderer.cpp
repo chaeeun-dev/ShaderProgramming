@@ -753,6 +753,10 @@ void Renderer::DrawDummy()
 	glUniform1f(uTime, g_time);
 	g_time += 0.016;
 
+	int uPoints = glGetUniformLocation(
+		shader, "u_DropInfo");
+	glUniform4fv(uPoints, 1000, m_DropPoints);
+
 	int u_TacopiTex = glGetUniformLocation(shader, "u_TacopiTex");
 	glUniform1i(u_TacopiTex, 0);
 	glActiveTexture(GL_TEXTURE0);

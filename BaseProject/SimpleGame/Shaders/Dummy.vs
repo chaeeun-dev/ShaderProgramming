@@ -1,6 +1,7 @@
 #version 330
 
 uniform float u_Time;
+uniform vec4 u_DropInfo[1000];	// vec4(x, y, startTime, LifeTime)
 
 in vec3 a_Pos;	// -0.5~0.5
 
@@ -32,43 +33,37 @@ void Frag()
 
 void Circle()
 {
-	vec4 points[2];
-	points[0] = vec4(0.0, 0.0, 1.0, 0.2); // x, y, w(lifeTime), x(startTime)
-	points[1] = vec4(0.2, 0.2, 0.5, 0.0);
-	
 	float accum = 0;
 
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 1000; ++i)
 	{
-		vec2 center = points[i].xy;
+		vec2 center = u_DropInfo[i].xy - vec2(0.5, 0.5);
 		vec2 pos = a_Pos.xy;
-		float lTime = points[i].z;
-		float sTime = points[i].w;
+		float lTime = u_DropInfo[i].z;
+		float sTime = u_DropInfo[i].w;
 		float nTime = u_Time - sTime;
 		
 		if (nTime > 0)
 		{
 			float lVal = fract(nTime / lTime);
+			float oneMinus = 1.0 - lVal;	// 시간이 지남에 따라 약해지도록
 			float t = lVal * lTime;
 
 			float d = distance(center, pos);
 			
-			float range = t/5.0;
-			float fade = 30 * clamp(range - d, 0, 1.0);	// 시간에 따라서
+			float range = t/20.0;
+			float fade = 15 * clamp(range - d, 0, 1.0);	// 시간에 따라서
 
-			float sinValue = sin(d * 4 * c_PI * 8 - t * 2);
+			float sinValue = pow(abs(sin(d * 4 * c_PI * 8 - t * 2)), 3);	// pow로 선이 얇아지게
 
-			accum += sinValue * fade;
+			accum += sinValue * fade * oneMinus;
 		}
-
-		float d = distance(center, pos);
-
-		accum += abs(sin(d * 4 * c_PI * 8 + u_Time * 2));
 	}
 
 	v_Grey = accum;
 
-	gl_Position = vec4(a_Pos, 1.0);
+	// gl_Position = vec4(a_Pos, 1.0);
+	gl_Position = vec4(a_Pos.x, a_Pos.y + 0.05 * accum, a_Pos.x, 1.0);
 }
 
 void main()
