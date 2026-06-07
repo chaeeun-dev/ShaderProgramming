@@ -1,6 +1,8 @@
 #version 330
 
 layout(location=0) out vec4 FragColor;
+layout(location=1) out vec4 FragColor1;
+layout(location=2) out vec4 FragColor2;
 
 in vec2 V_TPos;
 
@@ -26,7 +28,7 @@ void Simple()
 	}
 }
 
-void Pattern()
+vec4 Pattern()
 {
 	float lineCountH = 10;
 	float lineCountV = 2;
@@ -39,7 +41,7 @@ void Pattern()
 	float grey = pow(abs(sin((V_TPos.y*2*c_PI+per)*lineCountH)), lineWidth);
 	float grey1 = pow(abs(sin((V_TPos.x*2*c_PI+per)*lineCountV)), lineWidth);
 
-	FragColor = vec4(grey1 + grey);
+	return vec4(grey1 + grey);
 }
 
 void Circle()
@@ -69,7 +71,7 @@ void CircleSin()
 	FragColor = vec4(pow(value, 16));
 }
 
-void RainDrop()
+vec4 RainDrop()
 {
 	float accum = 0;
 	// RainDrop
@@ -101,10 +103,10 @@ void RainDrop()
 		}
 	}
 
-	FragColor = vec4(accum);
+	return vec4(accum);
 }
 
-void Flag()
+vec4 Flag()
 {
 	float amp = 0.4;
 	float speed = 20;
@@ -121,11 +123,10 @@ void Flag()
 	}
 	else 
 	{
-		grey = 0; 
-		discard;
+		grey = 0;
 	}
 
-	FragColor = vec4(grey);
+	return vec4(grey);
 }
 
 void Flame()
@@ -266,5 +267,7 @@ void Nums()
 
 void main()
 {
-	Flag();
+	FragColor = RainDrop();
+	FragColor1 = Flag();
+	FragColor2 = Pattern();
 }

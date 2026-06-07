@@ -25,10 +25,12 @@ void RenderScene(void)
 	// Renderer Test
 	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
 	//g_Renderer->DrawTriangle();
+	g_Renderer->DrawTriangle_Bloom();
 	//g_Renderer->DrawFS();
 	//g_Renderer->DrawDummy();
 	//g_Renderer->DrawDummy_FBO();
-	g_Renderer->DrawAll_FBO();
+	//g_Renderer->DrawAll_FBO();
+	//g_Renderer->DrawMultipleRenderTarget();
 
 	glutSwapBuffers();
 }

@@ -318,68 +318,180 @@ void Renderer::DrawTexture(GLuint texID, float x, float y, float scale, bool fli
 
 void Renderer::GenFBOs()
 {
-	// Gen Tex
-	GLuint textureId; glGenTextures(1, &m_FBO_Texture);
+	//Gen Texture
+	glGenTextures(1, &m_FBO_Texture);
 	glBindTexture(GL_TEXTURE_2D, m_FBO_Texture);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
-	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);	// 512 * 512 중요
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 340, 340, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
-	// Gen Render Buffer
-	GLuint depthBuffer; 
-	glGenRenderbuffers(1, &depthBuffer); 
-	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer); 
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512); 
+	//Gen Render Buffer
+	GLuint depthBuffer;
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 340, 340);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	// GenFBO
+	//GenFBO
 	glGenFramebuffers(1, &m_FBO);
+	//Binding before Attach
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	//Attach Color Buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO_Texture, 0);
+	//Attach Depth Buffer
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
-	// 1
-	// Gen Tex
-	GLuint textureId1; glGenTextures(1, &m_FBO_Texture1);
+	//Check status
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE) {
+		assert(0);
+	}
+
+	//Gen Texture
+	glGenTextures(1, &m_FBO_Texture1);
 	glBindTexture(GL_TEXTURE_2D, m_FBO_Texture1);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);	// 512 * 512 중요
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 340, 340, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
-	// GenFBO
+	//Gen Render Buffer
+	GLuint depthBuffer1;
+	glGenRenderbuffers(1, &depthBuffer1);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer1);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 340, 340);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//GenFBO
 	glGenFramebuffers(1, &m_FBO1);
+	//Binding before Attach
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO1);
+	//Attach Color Buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO_Texture1, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+	//Attach Depth Buffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer1);
 
-	// 2
-	// Gen Tex
-	GLuint textureId2; glGenTextures(1, &m_FBO_Texture2);
+	//Check status
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE) {
+		assert(0);
+	}
+
+	//Gen Texture
+	glGenTextures(1, &m_FBO_Texture2);
 	glBindTexture(GL_TEXTURE_2D, m_FBO_Texture2);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);	// 512 * 512 중요
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 340, 340, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
-	// GenFBO
+	//Gen Render Buffer
+	GLuint depthBuffer2;
+	glGenRenderbuffers(1, &depthBuffer2);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer2);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 340, 340);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//GenFBO
 	glGenFramebuffers(1, &m_FBO2);
+	//Binding before Attach
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO2);
+	//Attach Color Buffer
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO_Texture2, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+	//Attach Depth Buffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer2);
 
-	// 에러 체크
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status != GL_FRAMEBUFFER_COMPLETE)
-	{
+	//Check status
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE) {
 		assert(0);
+	}
+
+	//Gen Texture
+	glGenTextures(1, &m_MRT_FBO_Texture0);
+	glBindTexture(GL_TEXTURE_2D, m_MRT_FBO_Texture0);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 340, 340, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glGenTextures(1, &m_MRT_FBO_Texture1);
+	glBindTexture(GL_TEXTURE_2D, m_MRT_FBO_Texture1);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 340, 340, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glGenTextures(1, &m_MRT_FBO_Texture2);
+	glBindTexture(GL_TEXTURE_2D, m_MRT_FBO_Texture2);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 340, 340, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	//Gen Render Buffer
+	GLuint MRTdepthBuffer;
+	glGenRenderbuffers(1, &MRTdepthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, MRTdepthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 340, 340);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//GenFBO
+	glGenFramebuffers(1, &m_MRT_FBO);
+	//Binding before Attach
+	glBindFramebuffer(GL_FRAMEBUFFER, m_MRT_FBO);
+	//Attach Color Buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_MRT_FBO_Texture0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_MRT_FBO_Texture1, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_MRT_FBO_Texture2, 0);
+	//Attach Depth Buffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, MRTdepthBuffer);
+
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE) {
+		assert(0);
+	}
+
+	{
+		// MRT_HDR
+		glGenTextures(1, &m_MRT_HDR_FBO_High_Texture);
+		glBindTexture(GL_TEXTURE_2D, m_MRT_HDR_FBO_High_Texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+
+		glGenTextures(1, &m_MRT_HDR_FBO_Low_Texture);
+		glBindTexture(GL_TEXTURE_2D, m_MRT_HDR_FBO_Low_Texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+
+		glGenFramebuffers(1, &m_MRT_HDR_FBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_MRT_HDR_FBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_MRT_HDR_FBO_Low_Texture, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_MRT_HDR_FBO_High_Texture, 0);
+
+		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE) {
+			assert(0);
+		}
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -771,6 +883,28 @@ void Renderer::DrawTriangle()
 	glDisable(GL_BLEND);
 }
 
+void Renderer::DrawTriangle_Bloom()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, m_MRT_HDR_FBO);
+	GLenum DrawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, DrawBuffers);
+	glClearDepth(1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, 1024, 1024);
+
+	DrawTriangle();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 1024, 1024);
+
+	GLenum ResetDrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, ResetDrawBuffers);
+
+	DrawTexture(m_MRT_HDR_FBO_Low_Texture, -0.5, 0, 0.5, false);
+	DrawTexture(m_MRT_HDR_FBO_High_Texture, 0.5, 0, 0.5, false);
+}
+
 int g_CurrNum = 0;
 
 void Renderer::DrawFS()
@@ -901,14 +1035,23 @@ void Renderer::DrawDummy_FBO()
 void Renderer::DrawAll_FBO()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth(1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, 512, 512);
 	DrawFS();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO1);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth(1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, 512, 512);
 	DrawTriangle();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO2);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth(1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, 512, 512);
 	DrawDummy();
 
@@ -919,6 +1062,29 @@ void Renderer::DrawAll_FBO()
 	DrawTexture(m_FBO_Texture1, 0, 0, 0.3, false);
 	DrawTexture(m_FBO_Texture2, 0.5, 0, 0.3, false);
 
+}
+
+void Renderer::DrawMultipleRenderTarget()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, m_MRT_FBO);
+	GLenum DrawBuffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, DrawBuffers);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth(1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, 512, 512);
+
+	DrawFS();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 1024, 1024);
+
+	GLenum ResetDrawBuffers[1] = { GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, ResetDrawBuffers);
+
+	DrawTexture(m_MRT_FBO_Texture0, -0.5, 0, 0.3, false);
+	DrawTexture(m_MRT_FBO_Texture1, 0.0, 0, 0.3, false);
+	DrawTexture(m_MRT_FBO_Texture2, 0.5, 0, 0.3, false);
 }
 
 void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)

@@ -156,6 +156,9 @@ void Falling()
 	{
 		gl_Position = vec4(-1000, 0, 0, 1);
 	}
+
+	v_Color = a_RGB;
+	v_Tex = a_Tex;
 }
 
 void Shape()
@@ -187,5 +190,5 @@ void Shape()
 
 void main()
 {
-    Shape();
+    Falling();
 }
