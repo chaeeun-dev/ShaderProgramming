@@ -23,6 +23,7 @@ public:
 	void DrawDummy_FBO();
 	void DrawAll_FBO();
 	void DrawMultipleRenderTarget();
+	void DrawGaussianBlur(GLuint texID, GLuint targetFBOID, GLuint shader);
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -92,5 +93,10 @@ private:
 	GLuint m_MRT_HDR_FBO = 0;
 	GLuint m_MRT_HDR_FBO_High_Texture;	// float Texture
 	GLuint m_MRT_HDR_FBO_Low_Texture;	// float Texture
+
+	GLuint m_PingpongFBO[2];
+	GLuint m_PingpongTexture[2];
+	GLuint m_BlurH_Shader = 0;
+	GLuint m_BlurV_Shader = 0;
 };
 
